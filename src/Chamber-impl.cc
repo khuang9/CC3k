@@ -9,13 +9,17 @@ Chamber::Chamber(
     int startRow,
     int startCol,
     const std::vector<std::vector<char>> &grid,
+    const std::vector<std::vector<std::unique_ptr<Cell>>> &allCells,
     std::vector<std::vector<bool>> &visited,
     const std::unordered_set<char> &boundaryChars,
-    Observer *displayer) {
+    Observer *displayer): numCells{0} {
 
     std::queue<std::pair<int, int>> toCheck;
     toCheck.push({startRow, startCol});
-
+    // for (const auto &row : grid) {
+    //     for (auto c : row) std::cout << c;
+    //     std::cout << std::endl;
+    // }
     while (!toCheck.empty()) {
         auto [r, c] = toCheck.front();
         toCheck.pop();
@@ -25,7 +29,7 @@ Chamber::Chamber(
         visited[r][c] = true;
         if (boundaryChars.contains(grid[r][c])) continue;
 
-        cells[r][c] = new Cell(r, c);
+        cells[r][c] = allCells[r][c].get();
         
         // if (cells[r][c].size() == 1) ++numCells;
 
@@ -37,36 +41,27 @@ Chamber::Chamber(
 
     for (const auto &[r, row] : cells) {
         for (const auto &[c, cell] : row) {
-            cell->attach(displayer);
-            std::vector<std::vector<Cell*>> neighbours;
-            for (int i = r - 1; i <= r + 1; ++i) {
-                neighbours.emplace_back();
-                for (int j = c - 1; j <= c + 1; ++j) {
-                    if (cells.contains(i) && cells[i].contains(j) && !(i == r && j == c)) {
-                        cell->attach(cells[i][j]);
-                        neighbours.back().emplace_back(cells[i][j]);
-                    } else {
-                        neighbours.back().emplace_back(nullptr);
-                    }
-                }
-            }
-            cell->setNeighbours(neighbours);
             spawnElement(std::make_unique<FloorTileSpawner>(), r, c);
             if (SPAWNER_MAP.contains(grid[r][c])) {
-                spawnElement(SPAWNER_MAP.at(grid[r][c]), r, c);
+                spawnElement(SPAWNER_MAP.at(grid[r][c])(), r, c);
             }
         }
     }
 }
 
-const Chamber::CellMap &Chamber::getCells() const {
-    return cells;
+bool Chamber::contains(int row, int col) const {
+    return (cells.contains(row) && cells.at(row).contains(col));
 }
 
-void Chamber::spawnElement(const std::unique_ptr<WorldElementSpawner> &s, int r, int c) {
-    if (!cells.contains(r) || !cells.at(r).contains(c)) return;
-    auto el = s->spawn({r, c});
+// const Chamber::CellMap &Chamber::getCells() const {
+//     return cells;
+// }
+
+WorldElement *Chamber::spawnElement(const std::unique_ptr<WorldElementSpawner> &s, int r, int c) {
+    if (!cells.contains(r) || !cells.at(r).contains(c)) return nullptr;
+    auto el = s->spawn(cells.at(r).at(c));
     cells.at(r).at(c)->attachElement(el);
+    return el;
 }
 
 std::ostream &operator<<(std::ostream &out, const Chamber &c) {

@@ -1,6 +1,6 @@
 export module environmenttile;
 
-import worldelement;
+import worldelement_and_cell;
 import colour;
 import info;
 import worldelementtype;
@@ -11,6 +11,6 @@ export class EnvironmentTile: public WorldElement {
   protected:
     virtual Info doGetInfo() const override;
   public:
-    EnvironmentTile(char s, Colour c, WorldElementType t, const Location &loc);
+    EnvironmentTile(char s, Colour c, WorldElementType t, Cell *cell);
     virtual ~EnvironmentTile();
 };

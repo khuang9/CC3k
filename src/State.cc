@@ -8,8 +8,9 @@ export enum class StateType {
     PlayerArriving,
     CharacterLeaving,
     CharacterArriving,
-    CellAttach,
-    CellDetach
+    CellUpdate,
+    PlayerDeath,
+    StairsReached
 };
 
 export struct State {

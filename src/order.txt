@@ -1,10 +1,18 @@
 Spatial.cc Spatial-impl.cc Colour.cc WorldElementType.cc State.cc Info.cc
 SubjectObserver.cc SubjectObserver-impl.cc
-WorldElement.cc WorldElement-impl.cc
+WorldElementAndCell.cc WorldElementAndCell-impl.cc
 EnvironmentTile.cc EnvironmentTile-impl.cc
 WorldElementSpawner.cc WorldElementSpawner-impl.cc
 FloorTileSpawner.cc FloorTileSpawner-impl.cc
-Cell.cc Cell-impl.cc
+StairsSpawner.cc StairsSpawner-impl.cc
+VertWallSpawner.cc VertWallSpawner-impl.cc
+HorizWallSpawner.cc HorizWallSpawner-impl.cc
+DoorSpawner.cc DoorSpawner-impl.cc
+PassageSpawner.cc PassageSpawner-impl.cc
 Chamber.cc Chamber-impl.cc
 Floor.cc Floor-impl.cc
+Race.cc Race-impl.cc
+CharacterAndItem.cc CharacterAndItem-impl.cc
+Player.cc Player-impl.cc
+ShadeSpawner.cc ShadeSpawner-impl.cc
 tests.cc

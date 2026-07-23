@@ -1,5 +1,5 @@
 module worldelementspawner;
 
-WorldElement *WorldElementSpawner::spawn(const Location &loc) const {
-    return doSpawn(loc);
+WorldElement *WorldElementSpawner::spawn(Cell *cell) const {
+    return doSpawn(cell);
 }

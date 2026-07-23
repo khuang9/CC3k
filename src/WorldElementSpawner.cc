@@ -1,10 +1,10 @@
 export module worldelementspawner;
 
 import spatial;
-import worldelement;
+import worldelement_and_cell;
 
 export class WorldElementSpawner {
-    virtual WorldElement *doSpawn(const Location &loc) const = 0;
+    virtual WorldElement *doSpawn(Cell *cell) const = 0;
   public:
-    WorldElement *spawn(const Location &loc) const;
+    WorldElement *spawn(Cell *cell) const;
 };

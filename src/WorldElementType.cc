@@ -4,7 +4,7 @@ export enum class WorldElementType {
     Player,
     Enemy,
     Item,
-    Floor,
+    FloorTile,
     Stairs,
     VertWall,
     HorizWall,

@@ -22,3 +22,13 @@ Direction Location::operator-(const Location &other) const {
 Location Location::operator+(const Direction &other) const {
     return {row + other.dRow, col + other.dCol};
 }
+
+std::ostream &operator<<(std::ostream &out, const Location &loc) {
+    out << "(" << loc.row << ", " << loc.col << ")";
+    return out;
+}
+
+std::ostream &operator<<(std::ostream &out, const Direction &dir) {
+    out << "(" << dir.dRow << ", " << dir.dCol << ")";
+    return out;
+}

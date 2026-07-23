@@ -1,5 +1,7 @@
 export module spatial;
 
+import <iostream>;
+
 export struct Direction {
     int dRow;
     int dCol;
@@ -15,3 +17,6 @@ export struct Location {
     Direction operator-(const Location &other) const;
     Location operator+(const Direction &other) const;
 };
+
+export std::ostream &operator<<(std::ostream &out, const Location &loc);
+export std::ostream &operator<<(std::ostream &out, const Direction &dir);
