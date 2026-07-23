@@ -41,9 +41,9 @@ Chamber::Chamber(
 
     for (const auto &[r, row] : cells) {
         for (const auto &[c, cell] : row) {
-            spawnElement(std::make_unique<FloorTileSpawner>(), r, c);
+            elements.emplace_back(spawnElement(std::make_unique<FloorTileSpawner>(), r, c));
             if (SPAWNER_MAP.contains(grid[r][c])) {
-                spawnElement(SPAWNER_MAP.at(grid[r][c])(), r, c);
+                elements.emplace_back(spawnElement(SPAWNER_MAP.at(grid[r][c])(), r, c));
             }
         }
     }
@@ -57,10 +57,10 @@ bool Chamber::contains(int row, int col) const {
 //     return cells;
 // }
 
-WorldElement *Chamber::spawnElement(const std::unique_ptr<WorldElementSpawner> &s, int r, int c) {
+std::unique_ptr<WorldElement> Chamber::spawnElement(const std::unique_ptr<WorldElementSpawner> &s, int r, int c) {
     if (!cells.contains(r) || !cells.at(r).contains(c)) return nullptr;
     auto el = s->spawn(cells.at(r).at(c));
-    cells.at(r).at(c)->attachElement(el);
+    cells.at(r).at(c)->attachElement(el.get());
     return el;
 }
 

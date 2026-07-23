@@ -1,5 +1,5 @@
 module worldelementspawner;
 
-WorldElement *WorldElementSpawner::spawn(Cell *cell) const {
+std::unique_ptr<WorldElement> WorldElementSpawner::spawn(Cell *cell) const {
     return doSpawn(cell);
 }

@@ -4,6 +4,6 @@ import colour;
 import environmenttile;
 import worldelementtype;
 
-WorldElement *FloorTileSpawner::doSpawn(Cell *cell) const {
-    return new EnvironmentTile('.', Colour::None, WorldElementType::FloorTile, cell);
+std::unique_ptr<WorldElement> FloorTileSpawner::doSpawn(Cell *cell) const {
+    return std::make_unique<EnvironmentTile>('.', Colour::None, WorldElementType::FloorTile, cell);
 }

@@ -21,12 +21,14 @@ export class WorldElement: public Subject, public Observer {
 
     virtual void doNotify(Subject &whoFrom) override;
     virtual bool doCanOccupy(WorldElementType top);
+    virtual void doTakeTurn();
 
   public:
     WorldElement(char s, Colour c, WorldElementType t, Cell *cell);
     char getChar();
     WorldElementType getType();
     bool canOccupy(Cell *cell);
+    void takeTurn();
     virtual ~WorldElement();
 };
 

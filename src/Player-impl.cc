@@ -41,6 +41,7 @@ void Player::doTakeTurn() {
 
 void Player::die(Character *killedBy) {
     std::cout << "Player (" << race << ") was killed" << std::endl;
+    currentCell->detachElement();
     setState({StateType::PlayerDeath, loc});
     notifyAll();
 }

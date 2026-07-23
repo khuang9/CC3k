@@ -4,6 +4,6 @@ import colour;
 import environmenttile;
 import worldelementtype;
 
-WorldElement *StairsSpawner::doSpawn(Cell *cell) const {
-    return new EnvironmentTile('/', Colour::Blue, WorldElementType::Stairs, cell);
+std::unique_ptr<WorldElement> StairsSpawner::doSpawn(Cell *cell) const {
+    return std::make_unique<EnvironmentTile>('/', Colour::Blue, WorldElementType::Stairs, cell);
 }

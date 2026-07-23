@@ -4,6 +4,6 @@ import colour;
 import environmenttile;
 import worldelementtype;
 
-WorldElement *HorizWallSpawner::doSpawn(Cell *cell) const {
-    return new EnvironmentTile('-', Colour::None, WorldElementType::HorizWall, cell);
+std::unique_ptr<WorldElement> HorizWallSpawner::doSpawn(Cell *cell) const {
+    return std::make_unique<EnvironmentTile>('-', Colour::None, WorldElementType::HorizWall, cell);
 }

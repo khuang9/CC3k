@@ -34,7 +34,8 @@ export class Chamber {
   public:
     CellMap cells;
     int numCells;
-    WorldElement *spawnElement(const std::unique_ptr<WorldElementSpawner> &s, int r, int c);
+    std::vector<std::unique_ptr<WorldElement>> elements;
+    std::unique_ptr<WorldElement> spawnElement(const std::unique_ptr<WorldElementSpawner> &s, int r, int c);
 
     static inline const std::unordered_map<char, SpawnerFactory> SPAWNER_MAP = {
         {'/', [] { return std::make_unique<StairsSpawner>(); }},

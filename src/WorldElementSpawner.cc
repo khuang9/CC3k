@@ -1,10 +1,11 @@
 export module worldelementspawner;
 
+import <memory>;
 import spatial;
 import worldelement_and_cell;
 
 export class WorldElementSpawner {
-    virtual WorldElement *doSpawn(Cell *cell) const = 0;
+    virtual std::unique_ptr<WorldElement> doSpawn(Cell *cell) const = 0;
   public:
-    WorldElement *spawn(Cell *cell) const;
+    std::unique_ptr<WorldElement> spawn(Cell *cell) const;
 };

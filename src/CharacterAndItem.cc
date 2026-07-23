@@ -30,7 +30,6 @@ export class Character: public WorldElement {
     int calcDamage(Character *attacker);
 
   public:
-    virtual void doTakeTurn() = 0;
     virtual void decideDirectionAndMove() = 0;
     void move(Direction direction);
     virtual void doAttack(WorldElement *other);
@@ -55,7 +54,6 @@ export class Character: public WorldElement {
       char symbol, Colour c, WorldElementType t, Cell *cell,
       int maxHP, int hp, int atk, int def,
       Race race, StateType leave, StateType arrive);
-    void takeTurn();
     double getPotionBoost() const;
     double getBoostedAtk(Race r) const;
     double getModifiedDef() const;

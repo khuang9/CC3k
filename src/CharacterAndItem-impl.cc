@@ -35,9 +35,12 @@ void Character::move(Direction dir) {
 }
 
 void Character::doAttack(WorldElement *other) {
+    //note to self: attacking enemy prints twice since attacks floor underneath first
+    std::cout << race << " is attacking" << std::endl;
     if (Character *c = dynamic_cast<Character*>(other)) {
-        std::cout << race << " is attacking" << std::endl;
         c->getHit(this);
+    } else {
+        std::cout << race << " did not hit anything" << std::endl;
     }
 }
 
@@ -92,10 +95,6 @@ double Character::doGetModifiedDef() const {
 
 double Character::doGetScore() const {
     return lifetimeGold;
-}
-
-void Character::takeTurn() {
-    doTakeTurn();
 }
 
 double Character::getPotionBoost() const {

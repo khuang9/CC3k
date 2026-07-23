@@ -29,6 +29,12 @@ bool WorldElement::canOccupy(Cell *cell) {
     return doCanOccupy(cell->getTopElementType());
 }
 
+void WorldElement::doTakeTurn() {}
+
+void WorldElement::takeTurn() {
+    doTakeTurn();
+}
+
 WorldElement::~WorldElement() {}
 
 Cell::Cell(int row, int col)
@@ -59,19 +65,19 @@ void Cell::attachElement(WorldElement *el) {
     attach(el);
     elements.emplace_back(el);
     // std::cout << "Cell " << loc << " got " << getInfo().occupantChar << std::endl;
-    setState({StateType::CellUpdate, loc});
+    // setState({StateType::CellUpdate, loc});
     // std::cout << "A: " << loc.row << ' ' << loc.col << std::endl;
     // std::cout << observers.size() << std::endl;
     // std::cout << neighbours[1][1] << std::endl;
-    notifyAll();
+    // notifyAll();
 }
 
 void Cell::detachElement() {
     detachLast();
     elements.pop_back();
     // std::cout << "Cell " << loc << " got " << getInfo().occupantChar << std::endl;
-    setState({StateType::CellUpdate, loc});
-    notifyAll();
+    // setState({StateType::CellUpdate, loc});
+    // notifyAll();
 }
 
 void Cell::doNotify(Subject &whoFrom) {

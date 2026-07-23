@@ -63,7 +63,8 @@ Floor::Floor(std::string file) {
             if (NON_CHAMBER_CELLS.contains(grid[r][c])) {
                 if (NON_CHAMBER_SPAWNER_MAP.contains(grid[r][c])) {
                     auto el = NON_CHAMBER_SPAWNER_MAP.at(grid[r][c])()->spawn(cells[r][c].get());
-                    cells[r][c]->attachElement(el);
+                    cells[r][c]->attachElement(el.get());
+                    elements.emplace_back(std::move(el));
                 }
                 continue;
             }
@@ -82,7 +83,7 @@ void Floor::doNotify(Subject &whoFrom) {
     // grid[fromLoc.row][fromLoc.col] = whoFrom.getInfo().occupantChar;
 }
 
-WorldElement *Floor::spawnElement(const std::unique_ptr<WorldElementSpawner> &s, int r, int c) {
+std::unique_ptr<WorldElement> Floor::spawnElement(const std::unique_ptr<WorldElementSpawner> &s, int r, int c) {
     for (auto &ch : chambers) {
         if (ch.contains(r, c)) {
             return ch.spawnElement(s, r, c);
