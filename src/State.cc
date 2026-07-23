@@ -6,11 +6,12 @@ export enum class StateType {
     FloorCompleted,
     PlayerLeaving,
     PlayerArriving,
-    CharacterLeaving,
-    CharacterArriving,
+    EnemyLeaving,
+    EnemyArriving,
     CellUpdate,
     PlayerDeath,
-    StairsReached
+    StairsReached,
+    DontCare
 };
 
 export struct State {

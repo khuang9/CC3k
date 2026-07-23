@@ -6,7 +6,7 @@ EnvironmentTile::EnvironmentTile(char s, Colour c, WorldElementType t, Cell *cel
 void EnvironmentTile::doNotify(Subject &whoFrom) {}
 
 Info EnvironmentTile::doGetInfo() const {
-    return {};
+    return {loc, symbol};
 }
 
 EnvironmentTile::~EnvironmentTile() {}

@@ -17,6 +17,18 @@ Character::Character(
     , leavingStateType{leave}
     , arrivingStateType{arrive} {}
 
+Character::Character()
+    : WorldElement{}
+    , maxHP{0}
+    , hp{0}
+    , atk{0}
+    , def{0}
+    , gold{0}
+    , lifetimeGold{0}
+    , race{Race::None}
+    , leavingStateType{StateType::DontCare}
+    , arrivingStateType{StateType::DontCare} {}
+
 int Character::calcDamage(Character *attacker) {
     constexpr int BALANCE = 100;
     return std::ceil((BALANCE / (BALANCE + getModifiedDef())) * attacker->getBoostedAtk(race));
@@ -45,26 +57,38 @@ void Character::doAttack(WorldElement *other) {
 }
 
 void Character::landHit(Character *other) {
+    std::cout << race << " landed a hit on " << other->race << std::endl;
     // Default: no on-hit effects
     // Decorators to add on-hit effects as needed
 }
 
 void Character::getHit(Character *other) {
     double dmg = calcDamage(other);
-    std::cout << race << " is hit for " << dmg << std::endl;
-    updateHP(-dmg, other);
+    std::cout << race << " is hit by " << other->race << std::endl;
+    updateHP(-dmg);
+    if (hp == 0) die(other);
 }
 
-void Character::updateGold(int amount) {
+void Character::doUpdateGold(int amount) {
+    std::cout << race << " gained " << amount << " gold" << std::endl;
     gold = std::max(0, gold + amount);
     if (amount > 0) lifetimeGold += amount;
 }
 
-void Character::updateHP(int amount, Character *attacker) {
-    std::cout << race << "'s hp went from " << hp << " to ";
+void Character::doUpdateHP(int amount) {
+    if (amount < 0) std::cout << race << " took " << -amount << " damage ";
+    else std::cout << race << " healed " << amount << " hp ";
+    std::cout << "(" << hp << " -> ";
     hp = std::max(0, std::min(maxHP, hp + amount));
-    std::cout << hp << std::endl;
-    if (hp == 0) die(attacker);
+    std::cout << hp << ")" << std::endl;
+}
+
+void Character::updateGold(int amount) {
+    doUpdateGold(amount);
+}
+
+void Character::updateHP(int amount) {
+    doUpdateHP(amount);
 }
 
 void Character::kill(Character *other) {
@@ -73,7 +97,13 @@ void Character::kill(Character *other) {
     // Decorators to add on-kill effects as needed
 }
 
-void Character::use(WorldElement *other) {}
+void Character::use(WorldElement *other) {
+    if (Item *i = dynamic_cast<Item*>(other)) {
+        Direction d = i->getInfo().loc - loc;
+        i->useOn(this);
+        move(d);
+    }
+}
 
 double Character::doGetPotionBoost() const {
     constexpr double DEFAULT_BOOST = 1.0;
@@ -119,10 +149,17 @@ Info Character::doGetInfo() const {
 
 Character::~Character() {}
 
-Item::Item(char symbol, Colour c, WorldElementType t, Cell *cell, int value)
-    : WorldElement{symbol, c, t, cell}
+Item::Item(char symbol, Colour c, Cell *cell, int value)
+    : WorldElement{symbol, c, WorldElementType::Item, cell}
     , value{value} {}
 
 void Item::useOn(Character *c) {
     doUseOn(c);
+    currentCell->detachElement();
 }
+
+Info Item::doGetInfo() const {
+    return {loc, symbol};
+}
+
+Item::~Item() {}

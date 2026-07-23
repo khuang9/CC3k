@@ -3,8 +3,6 @@ module player;
 Player::Player(Cell *cell, int maxHP, int hp, int atk, int def, Race race)
     : Character{'@', Colour::Blue, WorldElementType::Player, cell, maxHP, hp, atk, def, race, StateType::PlayerLeaving, StateType::PlayerArriving} {}
 
-void Player::decideDirectionAndMove() {}
-
 bool Player::doCanOccupy(WorldElementType top) {
     return (
         top == WorldElementType::FloorTile ||
@@ -46,9 +44,13 @@ void Player::die(Character *killedBy) {
     notifyAll();
 }
 
-void Player::use(WorldElement *other) {
-    if (Item *i = dynamic_cast<Item*>(other)) {
-        i->useOn(this);
+void Player::doNotify(Subject &whoFrom) {
+    State fromState = whoFrom.getState();
+    if (fromState.type == StateType::EnemyArriving) {
+        if (fromState.loc.inNeighbourhood(loc) && fromState.loc != loc) {
+            setState({StateType::PlayerArriving, loc});
+            currentCell->getNeighbour(fromState.loc - loc)->notify(*this);
+        }
     }
 }
 

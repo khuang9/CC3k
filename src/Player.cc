@@ -12,6 +12,7 @@ import character_and_item;
 import race;
 import spatial;
 import state;
+import subjectobserver;
 
 export class Player: public Character {;
     inline static const std::unordered_map<std::string, Direction> DIRECTION_MAP{
@@ -26,11 +27,10 @@ export class Player: public Character {;
     };
 
   protected:
-    virtual void decideDirectionAndMove() override;
     virtual void doTakeTurn() override;
     virtual void die(Character *killedBy) override;
-    virtual void use(WorldElement *other) override;
     virtual bool doCanOccupy(WorldElementType top) override;
+    virtual void doNotify(Subject &whoFrom) override;
   public:
     Player(Cell *cell, int maxHP, int hp, int atk, int def, Race race);
     virtual ~Player();

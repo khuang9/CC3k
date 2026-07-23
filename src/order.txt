@@ -15,4 +15,13 @@ Race.cc Race-impl.cc
 CharacterAndItem.cc CharacterAndItem-impl.cc
 Player.cc Player-impl.cc
 ShadeSpawner.cc ShadeSpawner-impl.cc
+Treasure.cc Treasure-impl.cc
+SmallGoldSpawner.cc SmallGoldSpawner-impl.cc
+NormalGoldSpawner.cc NormalGoldSpawner-impl.cc
+MerchantHoardSpawner.cc MerchantHoardSpawner-impl.cc
+HealthPotion.cc HealthPotion-impl.cc
+RHSpawner.cc RHSpawner-impl.cc
+PHSpawner.cc PHSpawner-impl.cc
+Enemy.cc Enemy-impl.cc
+DwarfSpawner.cc DwarfSpawner-impl.cc
 tests.cc

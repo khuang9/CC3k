@@ -30,22 +30,22 @@ export class Character: public WorldElement {
     int calcDamage(Character *attacker);
 
   public:
-    virtual void decideDirectionAndMove() = 0;
-    void move(Direction direction);
+    virtual void move(Direction direction);
     virtual void doAttack(WorldElement *other);
     virtual void landHit(Character *other);
     virtual void getHit(Character *other);
-    virtual void updateGold(int amount);
-    virtual void updateHP(int amount, Character *attacker = nullptr);
     virtual void kill(Character *other);
     virtual void die(Character *killedBy) = 0;
-    virtual void use(WorldElement *other);
+    void use(WorldElement *other);
 
     virtual double doGetPotionBoost() const;
     virtual double doGetAtkMultiplier(Race r) const;
     virtual double doGetModifiedAtk() const;
     virtual double doGetModifiedDef() const;
     virtual double doGetScore() const;
+
+    virtual void doUpdateGold(int amount);
+    virtual void doUpdateHP(int amount);
 
     virtual Info doGetInfo() const override;
 
@@ -54,10 +54,13 @@ export class Character: public WorldElement {
       char symbol, Colour c, WorldElementType t, Cell *cell,
       int maxHP, int hp, int atk, int def,
       Race race, StateType leave, StateType arrive);
+    Character();
     double getPotionBoost() const;
     double getBoostedAtk(Race r) const;
     double getModifiedDef() const;
     double getScore() const;
+    void updateGold(int amount);
+    void updateHP(int amount);
     virtual ~Character();
 
     friend std::ostream &operator<<(std::ostream &out, const Character &e);
@@ -73,10 +76,12 @@ export std::ostream &operator<<(std::ostream &out, const Character &e) {
 }
 
 export class Item: public WorldElement {
-    int value;
   protected:
+    int value;
     virtual void doUseOn(Character *c) = 0;
+    virtual Info doGetInfo() const override;
   public:
-    Item(char symbol, Colour c, WorldElementType t, Cell *cell, int value);
+    Item(char symbol, Colour c, Cell *cell, int value);
     void useOn(Character *c);
+    virtual ~Item();
 };

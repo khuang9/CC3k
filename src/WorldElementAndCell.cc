@@ -25,6 +25,7 @@ export class WorldElement: public Subject, public Observer {
 
   public:
     WorldElement(char s, Colour c, WorldElementType t, Cell *cell);
+    WorldElement();
     char getChar();
     WorldElementType getType();
     bool canOccupy(Cell *cell);

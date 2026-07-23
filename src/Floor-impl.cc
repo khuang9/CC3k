@@ -100,10 +100,10 @@ std::ostream &operator<<(std::ostream &out, const Floor &f) {
         out << std::endl;
     }
 
-    out << "Chambers:" << std::endl;
-    for (const auto &ch : f.chambers) {
-        out << ch << std::endl;
-    }
+    // out << "Chambers:" << std::endl;
+    // for (const auto &ch : f.chambers) {
+    //     out << ch << std::endl;
+    // }
 
     return out;
 }

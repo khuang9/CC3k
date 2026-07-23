@@ -10,6 +10,14 @@ WorldElement::WorldElement(char s, Colour c, WorldElementType t, Cell *cell)
     , currentCell{cell}
     , markedForDespawn{false} {}
 
+WorldElement::WorldElement()
+    : symbol{' '}
+    , colour{Colour::None}
+    , type{WorldElementType::Blank}
+    , loc{0, 0}
+    , currentCell{nullptr}
+    , markedForDespawn{false} {}
+
 char WorldElement::getChar() {
     return symbol;
 }
