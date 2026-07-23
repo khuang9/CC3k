@@ -1,0 +1,3 @@
+module statmodifier;
+
+StatModifier::~StatModifier() {}

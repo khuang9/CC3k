@@ -12,6 +12,11 @@ PassageSpawner.cc PassageSpawner-impl.cc
 Chamber.cc Chamber-impl.cc
 Floor.cc Floor-impl.cc
 Race.cc Race-impl.cc
+Stats.cc Stats-impl.cc
+StatsManager.cc StatsManager-impl.cc
+HealOnHit.cc HealOnHit-impl.cc
+HealOnTurn.cc HealOnTurn-impl.cc
+LootExtra.cc LootExtra-impl.cc
 CharacterAndItem.cc CharacterAndItem-impl.cc
 Player.cc Player-impl.cc
 ShadeSpawner.cc ShadeSpawner-impl.cc
@@ -22,6 +27,15 @@ MerchantHoardSpawner.cc MerchantHoardSpawner-impl.cc
 HealthPotion.cc HealthPotion-impl.cc
 RHSpawner.cc RHSpawner-impl.cc
 PHSpawner.cc PHSpawner-impl.cc
+Modifiers.cc Modifiers-impl.cc
+StatModifier.cc StatModifier-impl.cc
+DefaultStatModifier.cc DefaultStatModifier-impl.cc
+ModDecorator.cc ModDecorator-impl.cc
+MultiAttack.cc MultiAttack-impl.cc
 Enemy.cc Enemy-impl.cc
 DwarfSpawner.cc DwarfSpawner-impl.cc
+ElfSpawner.cc ElfSpawner-impl.cc
+VampireSpawner.cc VampireSpawner-impl.cc
+TrollSpawner.cc TrollSpawner-impl.cc
+GoblinSpawner.cc GoblinSpawner-impl.cc
 tests.cc

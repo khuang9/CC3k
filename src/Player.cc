@@ -2,9 +2,11 @@ export module player;
 
 import <algorithm>;
 import <iostream>;
+import <memory>;
 import <string>;
 import <unordered_map>;
 import <utility>;
+import <vector>;
 import colour;
 import worldelement_and_cell;
 import worldelementtype;
@@ -12,6 +14,8 @@ import character_and_item;
 import race;
 import spatial;
 import state;
+import statsmanager;
+import statmodifier;
 import subjectobserver;
 
 export class Player: public Character {;
@@ -32,6 +36,6 @@ export class Player: public Character {;
     virtual bool doCanOccupy(WorldElementType top) override;
     virtual void doNotify(Subject &whoFrom) override;
   public:
-    Player(Cell *cell, int maxHP, int hp, int atk, int def, Race race);
+    Player(Cell *cell, int maxHP, int hp, int atk, int def, Race race, std::unique_ptr<StatModifier> mods, std::vector<std::unique_ptr<StatsManager>> stman);
     virtual ~Player();
 };

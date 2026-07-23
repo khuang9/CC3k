@@ -2,17 +2,18 @@ module enemy;
 
 import <algorithm>;
 import <iostream>;
+import <utility>;
 import <vector>;
 import colour;
 import state;
 
-Enemy::Enemy(char symbol, Cell *cell, int maxHP, int hp, int atk, int def, Race race)
-    : Character{symbol, Colour::Red, WorldElementType::Enemy, cell, maxHP, hp, atk, def, race, StateType::EnemyLeaving, StateType::EnemyArriving}
+Enemy::Enemy(char symbol, Cell *cell, int maxHP, int hp, int atk, int def, Race race, std::unique_ptr<StatModifier> mods, std::vector<std::unique_ptr<StatsManager>> stman)
+    : Character{symbol, Colour::Red, WorldElementType::Enemy, cell, maxHP, hp, atk, def, race, StateType::EnemyLeaving, StateType::EnemyArriving, std::move(mods), std::move(stman)}
     , aggro{false} {}
 
 void Enemy::doTakeTurn() {
     // decide on action and execute
-    if (hp == 0) return;
+    if (stats.hp == 0) return;
     if (aggro) {
         Direction d = playerLoc - loc;
         Cell *newCell = currentCell->getNeighbour(d);
@@ -35,6 +36,7 @@ void Enemy::doTakeTurn() {
             move(validDirections.back());
         }
     }
+    handleTurn();
 }
 
 void Enemy::die(Character *killedBy) {

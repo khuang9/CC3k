@@ -1,7 +1,7 @@
 module player;
 
-Player::Player(Cell *cell, int maxHP, int hp, int atk, int def, Race race)
-    : Character{'@', Colour::Blue, WorldElementType::Player, cell, maxHP, hp, atk, def, race, StateType::PlayerLeaving, StateType::PlayerArriving} {}
+Player::Player(Cell *cell, int maxHP, int hp, int atk, int def, Race race, std::unique_ptr<StatModifier> mods, std::vector<std::unique_ptr<StatsManager>> stman)
+    : Character{'@', Colour::Blue, WorldElementType::Player, cell, maxHP, hp, atk, def, race, StateType::PlayerLeaving, StateType::PlayerArriving, std::move(mods), std::move(stman)} {}
 
 bool Player::doCanOccupy(WorldElementType top) {
     return (
@@ -35,6 +35,7 @@ void Player::doTakeTurn() {
             else std::cout << "Cannot move " << cmd << std::endl;
         }
     }
+    handleTurn();
 }
 
 void Player::die(Character *killedBy) {

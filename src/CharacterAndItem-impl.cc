@@ -1,40 +1,38 @@
 module character_and_item;
 
 import <cmath>;
+// import potion;
 
 Character::Character(
     char symbol, Colour c, WorldElementType t, Cell *cell,
     int maxHP, int hp, int atk, int def,
-    Race race, StateType leave, StateType arrive)
+    Race race, StateType leave, StateType arrive,
+    std::unique_ptr<StatModifier> mods,
+    std::vector<std::unique_ptr<StatsManager>> stman)
     : WorldElement{symbol, c, t, cell}
-    , maxHP{maxHP}
-    , hp{hp}
-    , atk{atk}
-    , def{def}
-    , gold{0}
-    , lifetimeGold{0}
+    , stats{maxHP, hp, atk, def}
     , race{race}
     , leavingStateType{leave}
-    , arrivingStateType{arrive} {}
+    , arrivingStateType{arrive}
+    , mods{std::move(mods)}
+    , statHandlers{std::move(stman)} {}
 
 Character::Character()
     : WorldElement{}
-    , maxHP{0}
-    , hp{0}
-    , atk{0}
-    , def{0}
-    , gold{0}
-    , lifetimeGold{0}
+    , stats{0, 0, 0, 0}
     , race{Race::None}
     , leavingStateType{StateType::DontCare}
-    , arrivingStateType{StateType::DontCare} {}
+    , arrivingStateType{StateType::DontCare}
+    , mods{}
+    , statHandlers{} {}
 
 int Character::calcDamage(Character *attacker) {
     constexpr int BALANCE = 100;
-    return std::ceil((BALANCE / (BALANCE + getModifiedDef())) * attacker->getBoostedAtk(race));
+    return std::ceil((BALANCE / (BALANCE + getModifiedDef())) * attacker->getModifiedAtk(race));
 }
 
 void Character::move(Direction dir) {
+    if (getMods().stationary) return;
     setState({leavingStateType, loc});
     std::cout << race << " moved from " << loc << " to " << loc + dir << std::endl;
     currentCell->notify(*this);
@@ -50,102 +48,116 @@ void Character::doAttack(WorldElement *other) {
     //note to self: attacking enemy prints twice since attacks floor underneath first
     std::cout << race << " is attacking" << std::endl;
     if (Character *c = dynamic_cast<Character*>(other)) {
-        c->getHit(this);
+        if (getMods().neutral && !(c->attackedOrKilled.contains(race))) return;
+        for (int i = 0; i < getMods(c->race).numAttacks; ++i) {
+            attackedOrKilled.emplace(c->race);
+            c->getHit(this);
+        }
     } else {
         std::cout << race << " did not hit anything" << std::endl;
     }
 }
 
+void Character::handleHit(Character *other) {
+    for (const auto &h : statHandlers) {
+        h->onHit(stats, other->race);
+    }
+}
+
+void Character::handleKill(Character *other) {
+    for (const auto &h : statHandlers) {
+        h->onKill(stats, other->race);
+    }
+}
+
+void Character::handleTurn() {
+    for (const auto &h : statHandlers) {
+        h->onTurn(stats, Race::None);
+    }
+}
+
 void Character::landHit(Character *other) {
     std::cout << race << " landed a hit on " << other->race << std::endl;
+    handleHit(other);
     // Default: no on-hit effects
     // Decorators to add on-hit effects as needed
 }
 
 void Character::getHit(Character *other) {
+    // todo: chance to dodge
     double dmg = calcDamage(other);
     std::cout << race << " is hit by " << other->race << std::endl;
-    updateHP(-dmg);
-    if (hp == 0) die(other);
+    stats.updateHP(-dmg);
+    other->landHit(this);
+    if (stats.hp == 0) die(other);
 }
 
-void Character::doUpdateGold(int amount) {
-    std::cout << race << " gained " << amount << " gold" << std::endl;
-    gold = std::max(0, gold + amount);
-    if (amount > 0) lifetimeGold += amount;
-}
+// void Character::doUpdateGold(int amount) {
+//     std::cout << race << " gained " << amount << " gold" << std::endl;
+//     gold = std::max(0, gold + amount);
+//     if (amount > 0) lifetimeGold += amount;
+// }
 
-void Character::doUpdateHP(int amount) {
-    if (amount < 0) std::cout << race << " took " << -amount << " damage ";
-    else std::cout << race << " healed " << amount << " hp ";
-    std::cout << "(" << hp << " -> ";
-    hp = std::max(0, std::min(maxHP, hp + amount));
-    std::cout << hp << ")" << std::endl;
-}
+// void Character::doUpdateHP(int amount) {
+//     if (amount < 0) std::cout << race << " took " << -amount << " damage ";
+//     else std::cout << race << " healed " << amount << " hp ";
+//     std::cout << "(" << hp << " -> ";
+//     hp = std::max(0, std::min(maxHP, hp + amount));
+//     std::cout << hp << ")" << std::endl;
+// }
 
 void Character::updateGold(int amount) {
-    doUpdateGold(amount);
+    stats.updateGold(amount);
 }
 
 void Character::updateHP(int amount) {
-    doUpdateHP(amount);
+    stats.updateHP(amount);
 }
 
 void Character::kill(Character *other) {
     std::cout << race << " has killed a " << other->race;
+    handleKill(other);
     // Default: no on-kill effects
     // Decorators to add on-kill effects as needed
 }
 
 void Character::use(WorldElement *other) {
     if (Item *i = dynamic_cast<Item*>(other)) {
+        // if (Potion *p = dynamic_cast<Potion*>(i)) p->magnify(getMods().potionBoost);
         Direction d = i->getInfo().loc - loc;
         i->useOn(this);
         move(d);
     }
 }
 
-double Character::doGetPotionBoost() const {
-    constexpr double DEFAULT_BOOST = 1.0;
-    return DEFAULT_BOOST;
-}
-
-double Character::doGetAtkMultiplier(Race r) const {
-    constexpr double DEFAULT_MULTIPLIER = 1.0;
-    return DEFAULT_MULTIPLIER;
-}
-
-double Character::doGetModifiedAtk() const {
-    return atk;
-}
-
-double Character::doGetModifiedDef() const {
-    return def;
-}
-
-double Character::doGetScore() const {
-    return lifetimeGold;
+Modifiers Character::getMods(Race r) const {
+    return mods->getModifiers(r);
 }
 
 double Character::getPotionBoost() const {
-    return doGetPotionBoost();
+    return getMods().potionBoost;
 }
 
-double Character::getBoostedAtk(Race r) const {
-    return doGetModifiedAtk() * doGetAtkMultiplier(r);
+double Character::getModifiedAtk(Race r) const {
+    Modifiers m = getMods(r);
+    return (stats.atk + m.atkBonus) * m.atkMult;
 }
 
 double Character::getModifiedDef() const {
-    return doGetModifiedDef();
+    return stats.def + getMods().defBonus;
 }
 
 double Character::getScore() const {
-    return doGetScore();
+    return stats.lifetimeGold * getMods().scoreMult;
 }
 
 Info Character::doGetInfo() const {
     return {loc, symbol};
 }
+
+// void Character::setModifiers(const Modifiers &m) {
+//     mods = m;
+// }
 
 Character::~Character() {}
 

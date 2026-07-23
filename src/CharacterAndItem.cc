@@ -2,12 +2,18 @@ export module character_and_item;
 
 import <algorithm>;
 import <iostream>;
+import <memory>;
 import <unordered_set>;
 import <utility>;
+import <vector>;
 import colour;
+import modifiers;
 import race;
 import spatial;
 import state;
+import stats;
+import statsmanager;
+import statmodifier;
 import info;
 import worldelement_and_cell;
 import worldelementtype;
@@ -16,18 +22,18 @@ export class Item;
 
 export class Character: public WorldElement {
   protected:
-    int maxHP;
-    int hp;
-    int atk;
-    int def;
-    int gold;
-    int lifetimeGold;
+    Stats stats;
     Race race;
     std::unordered_set<Race> attackedOrKilled;
     // std::unordered_set<PotionType> potionsUsed;
     StateType leavingStateType, arrivingStateType;
+    std::unique_ptr<StatModifier> mods;
+    std::vector<std::unique_ptr<StatsManager>> statHandlers;
 
     int calcDamage(Character *attacker);
+    void handleHit(Character *other);
+    void handleKill(Character *other);
+    void handleTurn();
 
   public:
     virtual void move(Direction direction);
@@ -38,29 +44,28 @@ export class Character: public WorldElement {
     virtual void die(Character *killedBy) = 0;
     void use(WorldElement *other);
 
-    virtual double doGetPotionBoost() const;
-    virtual double doGetAtkMultiplier(Race r) const;
-    virtual double doGetModifiedAtk() const;
-    virtual double doGetModifiedDef() const;
-    virtual double doGetScore() const;
-
-    virtual void doUpdateGold(int amount);
-    virtual void doUpdateHP(int amount);
+    // virtual void doUpdateGold(int amount);
+    // virtual void doUpdateHP(int amount);
 
     virtual Info doGetInfo() const override;
 
   public:
     Character(
-      char symbol, Colour c, WorldElementType t, Cell *cell,
-      int maxHP, int hp, int atk, int def,
-      Race race, StateType leave, StateType arrive);
+        char symbol, Colour c, WorldElementType t, Cell *cell,
+        int maxHP, int hp, int atk, int def,
+        Race race, StateType leave, StateType arrive,
+        std::unique_ptr<StatModifier> mods,
+        std::vector<std::unique_ptr<StatsManager>> stman);
     Character();
+    Modifiers getMods(Race r = Race::None) const;
     double getPotionBoost() const;
-    double getBoostedAtk(Race r) const;
-    double getModifiedDef() const;
     double getScore() const;
+    double getModifiedDef() const;
+    double getModifiedAtk(Race r) const;
     void updateGold(int amount);
     void updateHP(int amount);
+
+    // void setModifiers(const Modifiers &m);
     virtual ~Character();
 
     friend std::ostream &operator<<(std::ostream &out, const Character &e);
@@ -68,10 +73,10 @@ export class Character: public WorldElement {
 
 export std::ostream &operator<<(std::ostream &out, const Character &e) {
     out << "Race: " << e.race;
-    out << " Gold: " << e.gold << std::endl;
-    out << "HP: " << e.hp << std::endl;
-    out << "Atk: " << e.atk << std::endl;
-    out << "Def: " << e.def << std::endl;
+    out << " Gold: " << e.stats.gold << std::endl;
+    out << "HP: " << e.stats.hp << std::endl;
+    out << "Atk: " << e.stats.atk << std::endl;
+    out << "Def: " << e.stats.def << std::endl;
     return out;
 }
 

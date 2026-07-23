@@ -16,13 +16,17 @@ import phspawner;
 import rhspawner;
 import character_and_item;
 import dwarfspawner;
+import elfspawner;
+import vampirespawner;
+import trollspawner;
+import goblinspawner;
 using namespace std;
 
 int main() {
     Floor f{"emptyfloor.txt"};
     std::cout << f;
 
-    std::unique_ptr<WorldElement> p = f.spawnElement(std::make_unique<ShadeSpawner>(), 6, 25);//new Player{Location{5, 5}, 100, 100, 100, 100, Race::Shade};
+    std::unique_ptr<WorldElement> p = f.spawnElement(std::make_unique<GoblinSpawner>(), 6, 25);//new Player{Location{5, 5}, 100, 100, 100, 100, Race::Shade};
     std::unique_ptr<WorldElement> p2 = f.spawnElement(std::make_unique<DwarfSpawner>(), 6, 28);
     // std::unique_ptr<WorldElement> p3 = f.spawnElement(std::make_unique<SmallGoldSpawner>(), 5, 7);
     // std::unique_ptr<WorldElement> p4 = f.spawnElement(std::make_unique<PHSpawner>(), 5, 8);
