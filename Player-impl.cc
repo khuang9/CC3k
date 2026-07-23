@@ -1,0 +1,54 @@
+module player;
+
+Player::Player(Cell *cell, int maxHP, int hp, int atk, int def, Race race)
+    : Character{'@', Colour::Blue, WorldElementType::Player, cell, maxHP, hp, atk, def, race, StateType::PlayerLeaving, StateType::PlayerArriving} {}
+
+void Player::decideDirectionAndMove() {}
+
+bool Player::doCanOccupy(WorldElementType top) {
+    return (
+        top == WorldElementType::FloorTile ||
+        top == WorldElementType::Item ||
+        top == WorldElementType::Stairs ||
+        top == WorldElementType::Door ||
+        top == WorldElementType::Passage
+    );
+}
+
+void Player::doTakeTurn() {
+    // decide on action and execute
+    std::string cmd;
+    std::string dir;
+    if (std::cin >> cmd) {
+        if (cmd == "a" || cmd == "u") {
+            if (std::cin >> dir) {
+                if (DIRECTION_MAP.contains(dir)) {
+                    Direction d = DIRECTION_MAP.at(dir);
+                    Cell *newCell = currentCell->getNeighbour(d);
+                    for (WorldElement *we : newCell->getElements()) {
+                        if (cmd == "a") doAttack(we);
+                        else if (cmd == "u") use(we);
+                    }
+                }
+            }
+        } else if (DIRECTION_MAP.contains(cmd)) {
+            Direction d = DIRECTION_MAP.at(cmd);
+            if (canOccupy(currentCell->getNeighbour(d))) move(d);
+            else std::cout << "Cannot move " << cmd << std::endl;
+        }
+    }
+}
+
+void Player::die(Character *killedBy) {
+    std::cout << "Player (" << race << ") was killed" << std::endl;
+    setState({StateType::PlayerDeath, loc});
+    notifyAll();
+}
+
+void Player::use(WorldElement *other) {
+    if (Item *i = dynamic_cast<Item*>(other)) {
+        i->useOn(this);
+    }
+}
+
+Player::~Player() {}
