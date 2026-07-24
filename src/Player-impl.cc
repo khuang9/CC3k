@@ -15,6 +15,7 @@ bool Player::doCanOccupy(WorldElementType top) {
 
 void Player::doTakeTurn() {
     // decide on action and execute
+    handleTurn();
     std::string cmd;
     std::string dir;
     if (std::cin >> cmd) {
@@ -27,6 +28,7 @@ void Player::doTakeTurn() {
                         if (cmd == "a") doAttack(we);
                         else if (cmd == "u") use(we);
                     }
+                    if (cmd == "u") move(d);
                 }
             }
         } else if (DIRECTION_MAP.contains(cmd)) {
@@ -35,12 +37,14 @@ void Player::doTakeTurn() {
             else std::cout << "Cannot move " << cmd << std::endl;
         }
     }
-    handleTurn();
 }
 
 void Player::die(Character *killedBy) {
-    std::cout << "Player (" << race << ") was killed" << std::endl;
-    currentCell->detachElement();
+    std::cout << "Player (" << race << ") was killed by ";
+    if (!killedBy) std::cout << "their own shenanigans";
+    else std::cout << killedBy->getRace();
+    std::cout << std::endl;
+    currentCell->detachElement(this);
     setState({StateType::PlayerDeath, loc});
     notifyAll();
 }
@@ -50,6 +54,11 @@ void Player::doNotify(Subject &whoFrom) {
     if (fromState.type == StateType::EnemyArriving) {
         if (fromState.loc.inNeighbourhood(loc) && fromState.loc != loc) {
             setState({StateType::PlayerArriving, loc});
+            currentCell->getNeighbour(fromState.loc - loc)->notify(*this);
+        }
+    } else if (fromState.type == StateType::EnemyLeaving) {
+        if (fromState.loc.inNeighbourhood(loc) && fromState.loc != loc) {
+            setState({StateType::PlayerLeaving, loc});
             currentCell->getNeighbour(fromState.loc - loc)->notify(*this);
         }
     }

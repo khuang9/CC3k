@@ -5,6 +5,7 @@ import <memory>;
 import <utility>;
 import <vector>;
 import defaultstatmodifier;
+import dodge;
 import healonhit;
 import statsmanager;
 import statmodifier;
@@ -20,8 +21,10 @@ std::unique_ptr<WorldElement> VampireSpawner::doSpawn(Cell *cell) const {
     constexpr int ALLERGY_DMG = 5;
     const Race ALLERGIC = Race::Dwarf;
 
+    constexpr double DODGE = 0.5;
+
     std::unique_ptr<StatModifier> mods = std::make_unique<DefaultStatModifier>();
-    // mods = std::make_unique<ExtraScore>(std::move(mods), SCORE_MULT);
+    mods = std::make_unique<Dodge>(std::move(mods), DODGE);
 
     std::vector<std::unique_ptr<StatsManager>> stman;
     stman.emplace_back(std::make_unique<HealOnHit>(

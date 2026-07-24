@@ -9,7 +9,7 @@ export struct Modifiers {
     int numAttacks;
     bool stationary;
     double dodgeChance;
-    bool dropsGold;
+    bool dropsItems;
     bool neutral;
 
     Modifiers();

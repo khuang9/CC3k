@@ -21,6 +21,7 @@ export class Floor: public Observer {
     std::vector<std::vector<std::unique_ptr<Cell>>> cells;
     std::vector<Chamber> chambers;
     std::vector<std::unique_ptr<WorldElement>> elements;
+    std::unique_ptr<WorldElement> player;
     virtual void doNotify(Subject &whoFrom) override;
 
     inline static const std::unordered_set<char> NON_CHAMBER_CELLS{
@@ -34,9 +35,20 @@ export class Floor: public Observer {
         {'#', [] { return std::make_unique<PassageSpawner>(); }},
     };
 
+
+    // Location getFreeCell(WorldElement *we) const;
+    // void spawnPlayer();
+    // void spawnStairs();
+    // void spawnEnemies();
+    // void spawnPotions();
+    // void spawnTreasure();
+    // void runTurn();
+
   public:
     explicit Floor(std::string file);
-    std::unique_ptr<WorldElement> spawnElement(const std::unique_ptr<WorldElementSpawner> &s, int r, int c);
+    void spawnElements();
+    WorldElement *spawnPlayer(const std::unique_ptr<WorldElementSpawner> &s, int r, int c);
+    WorldElement *spawnElement(const std::unique_ptr<WorldElementSpawner> &s, int r, int c);
     friend std::ostream &operator<<(std::ostream &out, const Floor &f);
 };
 

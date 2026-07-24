@@ -1,6 +1,7 @@
 module character_and_item;
 
 import <cmath>;
+import randomizer;
 // import potion;
 
 Character::Character(
@@ -37,7 +38,7 @@ void Character::move(Direction dir) {
     std::cout << race << " moved from " << loc << " to " << loc + dir << std::endl;
     currentCell->notify(*this);
     loc = loc + dir;
-    currentCell->detachElement();
+    currentCell->detachElement(this);
     currentCell = currentCell->getNeighbour(dir);
     currentCell->attachElement(this);
     setState({arrivingStateType, loc});
@@ -48,7 +49,6 @@ void Character::doAttack(WorldElement *other) {
     //note to self: attacking enemy prints twice since attacks floor underneath first
     std::cout << race << " is attacking" << std::endl;
     if (Character *c = dynamic_cast<Character*>(other)) {
-        if (getMods().neutral && !(c->attackedOrKilled.contains(race))) return;
         for (int i = 0; i < getMods(c->race).numAttacks; ++i) {
             attackedOrKilled.emplace(c->race);
             c->getHit(this);
@@ -85,11 +85,19 @@ void Character::landHit(Character *other) {
 
 void Character::getHit(Character *other) {
     // todo: chance to dodge
-    double dmg = calcDamage(other);
-    std::cout << race << " is hit by " << other->race << std::endl;
-    stats.updateHP(-dmg);
-    other->landHit(this);
-    if (stats.hp == 0) die(other);
+    if (Randomizer::coinToss(getMods().dodgeChance)) {
+        std::cout << race << " dodged attack from " << other->race << std::endl;
+    } else {
+        std::cout << race << " could not dodge (this bum has " << getMods().dodgeChance << " to dodge)" << std::endl;
+        double dmg = calcDamage(other);
+        std::cout << race << " is hit by " << other->race << " (-" << dmg << ")" << std::endl;
+        updateHP(-dmg, other);
+        other->landHit(this);
+    }
+}
+
+Race Character::getRace() const {
+    return race;
 }
 
 // void Character::doUpdateGold(int amount) {
@@ -110,12 +118,14 @@ void Character::updateGold(int amount) {
     stats.updateGold(amount);
 }
 
-void Character::updateHP(int amount) {
+void Character::updateHP(int amount, Character *other) {
     stats.updateHP(amount);
+    if (stats.hp == 0) die(other);
 }
 
 void Character::kill(Character *other) {
-    std::cout << race << " has killed a " << other->race;
+    std::cout << race << " has killed " << other->race << std::endl;
+    attackedOrKilled.insert(other->race);
     handleKill(other);
     // Default: no on-kill effects
     // Decorators to add on-kill effects as needed
@@ -124,14 +134,28 @@ void Character::kill(Character *other) {
 void Character::use(WorldElement *other) {
     if (Item *i = dynamic_cast<Item*>(other)) {
         // if (Potion *p = dynamic_cast<Potion*>(i)) p->magnify(getMods().potionBoost);
-        Direction d = i->getInfo().loc - loc;
         i->useOn(this);
-        move(d);
     }
+}
+
+bool Character::hasAttackedOrKilled(Race r) {
+    return attackedOrKilled.contains(r);
+}
+
+void Character::loseTempEffects() {
+    auto tmp = mods.get();
+    mods = tmp->prune(std::move(mods));
 }
 
 Modifiers Character::getMods(Race r) const {
     return mods->getModifiers(r);
+}
+
+void Character::addMods(std::unique_ptr<StatModifier> newMods) {
+    if (newMods) {
+        newMods->attachTo(std::move(mods));
+        mods = std::move(newMods);
+    }
 }
 
 double Character::getPotionBoost() const {
@@ -140,11 +164,11 @@ double Character::getPotionBoost() const {
 
 double Character::getModifiedAtk(Race r) const {
     Modifiers m = getMods(r);
-    return (stats.atk + m.atkBonus) * m.atkMult;
+    return std::max(0, stats.atk + m.atkBonus) * m.atkMult;
 }
 
 double Character::getModifiedDef() const {
-    return stats.def + getMods().defBonus;
+    return std::max(0, stats.def + getMods().defBonus);
 }
 
 double Character::getScore() const {
@@ -167,7 +191,7 @@ Item::Item(char symbol, Colour c, Cell *cell, int value)
 
 void Item::useOn(Character *c) {
     doUseOn(c);
-    currentCell->detachElement();
+    despawn();
 }
 
 Info Item::doGetInfo() const {
@@ -175,3 +199,12 @@ Info Item::doGetInfo() const {
 }
 
 Item::~Item() {}
+
+std::ostream &operator<<(std::ostream &out, const Character &e) {
+    out << "Race: " << e.race;
+    out << " Gold: " << e.stats.gold << std::endl;
+    out << "HP: " << e.stats.hp << std::endl;
+    out << "Atk: " << e.getModifiedAtk() << std::endl;
+    out << "Def: " << e.getModifiedDef() << std::endl;
+    return out;
+}

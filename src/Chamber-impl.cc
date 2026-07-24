@@ -60,7 +60,6 @@ bool Chamber::contains(int row, int col) const {
 std::unique_ptr<WorldElement> Chamber::spawnElement(const std::unique_ptr<WorldElementSpawner> &s, int r, int c) {
     if (!cells.contains(r) || !cells.at(r).contains(c)) return nullptr;
     auto el = s->spawn(cells.at(r).at(c));
-    cells.at(r).at(c)->attachElement(el.get());
     return el;
 }
 

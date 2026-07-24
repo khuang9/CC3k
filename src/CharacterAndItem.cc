@@ -43,6 +43,8 @@ export class Character: public WorldElement {
     virtual void kill(Character *other);
     virtual void die(Character *killedBy) = 0;
     void use(WorldElement *other);
+    bool hasAttackedOrKilled(Race r);
+    void loseTempEffects();
 
     // virtual void doUpdateGold(int amount);
     // virtual void doUpdateHP(int amount);
@@ -58,12 +60,14 @@ export class Character: public WorldElement {
         std::vector<std::unique_ptr<StatsManager>> stman);
     Character();
     Modifiers getMods(Race r = Race::None) const;
+    void addMods(std::unique_ptr<StatModifier> newMods);
+    Race getRace() const;
     double getPotionBoost() const;
     double getScore() const;
     double getModifiedDef() const;
-    double getModifiedAtk(Race r) const;
+    double getModifiedAtk(Race r = Race::None) const;
     void updateGold(int amount);
-    void updateHP(int amount);
+    void updateHP(int amount, Character *other = nullptr);
 
     // void setModifiers(const Modifiers &m);
     virtual ~Character();
@@ -71,14 +75,7 @@ export class Character: public WorldElement {
     friend std::ostream &operator<<(std::ostream &out, const Character &e);
 };
 
-export std::ostream &operator<<(std::ostream &out, const Character &e) {
-    out << "Race: " << e.race;
-    out << " Gold: " << e.stats.gold << std::endl;
-    out << "HP: " << e.stats.hp << std::endl;
-    out << "Atk: " << e.stats.atk << std::endl;
-    out << "Def: " << e.stats.def << std::endl;
-    return out;
-}
+export std::ostream &operator<<(std::ostream &out, const Character &e);
 
 export class Item: public WorldElement {
   protected:

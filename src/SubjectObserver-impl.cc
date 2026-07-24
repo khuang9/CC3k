@@ -1,5 +1,7 @@
 module subjectobserver;
 
+import <algorithm>;
+
 void Observer::notify(Subject &whoFrom) {
     doNotify(whoFrom);
 }
@@ -13,11 +15,11 @@ void Subject::attach(Observer *o) {
 }
 
 void Subject::detach(Observer *o) {
-    if (observers.back() == o) {
-        observers.pop_back();
-        return;
-    } else {
-        // todo
+    if (observers.empty()) return;
+    else if (observers.back() == o) observers.pop_back();
+    else {
+        auto it = std::find(observers.begin(), observers.end(), o);
+        if (it != observers.end()) observers.erase(it);
     }
 }
 

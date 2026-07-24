@@ -1,6 +1,12 @@
 module floor;
 
+import character_and_item;
+import drop;
+import enemy;
+import info;
+import player;
 import spatial;
+import state;
 import <sstream>;
 
 Floor::Floor(std::string file) {
@@ -63,7 +69,6 @@ Floor::Floor(std::string file) {
             if (NON_CHAMBER_CELLS.contains(grid[r][c])) {
                 if (NON_CHAMBER_SPAWNER_MAP.contains(grid[r][c])) {
                     auto el = NON_CHAMBER_SPAWNER_MAP.at(grid[r][c])()->spawn(cells[r][c].get());
-                    cells[r][c]->attachElement(el.get());
                     elements.emplace_back(std::move(el));
                 }
                 continue;
@@ -78,15 +83,52 @@ Floor::Floor(std::string file) {
 }
 
 void Floor::doNotify(Subject &whoFrom) {
+    State fromState = whoFrom.getState();
+    Info fromInfo = whoFrom.getInfo();
+    if (fromState.type == StateType::EnemyDeath) {
+        auto el = cells[fromInfo.loc.row][fromInfo.loc.col]->getElements().back();
+        if (Enemy *e = dynamic_cast<Enemy*>(el)) {
+            const Drop *d = e->getRandomDrop();
+            for (int i = 0; i < d->amount; ++i) {
+                auto dropped = d->spawner->spawn(cells[fromInfo.loc.row][fromInfo.loc.col].get());
+                if (e->getMods().dropsItems) {
+                    elements.emplace_back(std::move(dropped));
+                } else if (Item *i = dynamic_cast<Item*>(dropped.get())) {
+                    if (Character *c = dynamic_cast<Character*>(player.get())) {
+                        i->useOn(c);
+                    }
+                }
+            }
+        }
+    } else if (fromState.type == StateType::PlayerDeath) {
+        // stop game
+    }
     // Location fromLoc = whoFrom.getInfo().loc;
     // // std::cout << "Notified of change in " << fromLoc << " with " << whoFrom.getInfo().occupantChar << std::endl;
     // grid[fromLoc.row][fromLoc.col] = whoFrom.getInfo().occupantChar;
 }
 
-std::unique_ptr<WorldElement> Floor::spawnElement(const std::unique_ptr<WorldElementSpawner> &s, int r, int c) {
+WorldElement *Floor::spawnPlayer(const std::unique_ptr<WorldElementSpawner> &s, int r, int c) {
     for (auto &ch : chambers) {
         if (ch.contains(r, c)) {
-            return ch.spawnElement(s, r, c);
+            player = ch.spawnElement(s, r, c);
+            if (!(dynamic_cast<Player*>(player.get()))) {
+                player.reset();
+                return nullptr;
+            }
+            player->attach(this);
+            return player.get();
+        }
+    }
+    return nullptr;
+}
+
+WorldElement *Floor::spawnElement(const std::unique_ptr<WorldElementSpawner> &s, int r, int c) {
+    for (auto &ch : chambers) {
+        if (ch.contains(r, c)) {
+            elements.emplace_back(ch.spawnElement(s, r, c));
+            elements.back()->attach(this);
+            return elements.back().get();
         }
     }
     return nullptr;

@@ -22,6 +22,7 @@ export class WorldElement: public Subject, public Observer {
     virtual void doNotify(Subject &whoFrom) override;
     virtual bool doCanOccupy(WorldElementType top);
     virtual void doTakeTurn();
+    virtual void despawn();
 
   public:
     WorldElement(char s, Colour c, WorldElementType t, Cell *cell);
@@ -50,5 +51,5 @@ export class Cell: public Subject, public Observer {
     const std::vector<WorldElement*> &getElements() const;
     WorldElementType getTopElementType() const;
     void attachElement(WorldElement *el);
-    void detachElement();
+    void detachElement(WorldElement *el);
 };

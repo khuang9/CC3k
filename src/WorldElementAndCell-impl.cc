@@ -1,5 +1,6 @@
 module worldelement_and_cell;
 
+import <algorithm>;
 import <iostream>;
 
 WorldElement::WorldElement(char s, Colour c, WorldElementType t, Cell *cell)
@@ -8,7 +9,9 @@ WorldElement::WorldElement(char s, Colour c, WorldElementType t, Cell *cell)
     , type{t}
     , loc{cell->getInfo().loc}
     , currentCell{cell}
-    , markedForDespawn{false} {}
+    , markedForDespawn{false} {
+    if (currentCell) currentCell->attachElement(this);
+}
 
 WorldElement::WorldElement()
     : symbol{' '}
@@ -40,7 +43,14 @@ bool WorldElement::canOccupy(Cell *cell) {
 void WorldElement::doTakeTurn() {}
 
 void WorldElement::takeTurn() {
-    doTakeTurn();
+    if (currentCell) doTakeTurn();
+}
+
+void WorldElement::despawn() {
+    if (currentCell) {
+        currentCell->detachElement(this);
+        currentCell = nullptr;
+    }
 }
 
 WorldElement::~WorldElement() {}
@@ -53,6 +63,7 @@ void Cell::setNeighbours(const std::vector<std::vector<Cell*>> &nb) {
 }
 
 Cell *Cell::getNeighbour(Direction dir) const {
+    std::cout << dir << std::endl;
     return neighbours[1 + dir.dRow][1 + dir.dCol];
 }
 
@@ -80,9 +91,15 @@ void Cell::attachElement(WorldElement *el) {
     // notifyAll();
 }
 
-void Cell::detachElement() {
-    detachLast();
-    elements.pop_back();
+void Cell::detachElement(WorldElement *el) {
+    detach(el);
+
+    if (elements.empty()) return;
+    else if (elements.back() == el) elements.pop_back();
+    else {
+        auto it = std::find(elements.begin(), elements.end(), el);
+        if (it != elements.end()) elements.erase(it);
+    }
     // std::cout << "Cell " << loc << " got " << getInfo().occupantChar << std::endl;
     // setState({StateType::CellUpdate, loc});
     // notifyAll();

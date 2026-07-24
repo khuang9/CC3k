@@ -8,4 +8,5 @@ export class ModDecorator: public StatModifier {
     std::unique_ptr<StatModifier> next;
   public:
     ModDecorator(std::unique_ptr<StatModifier> next);
+    virtual void attachTo(std::unique_ptr<StatModifier> other) override;
 };

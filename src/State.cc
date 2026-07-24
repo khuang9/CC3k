@@ -10,6 +10,7 @@ export enum class StateType {
     EnemyArriving,
     CellUpdate,
     PlayerDeath,
+    EnemyDeath,
     StairsReached,
     DontCare
 };

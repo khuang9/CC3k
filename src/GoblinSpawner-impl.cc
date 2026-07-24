@@ -4,6 +4,7 @@ import <memory>;
 import <utility>;
 import <vector>;
 import defaultstatmodifier;
+import dodge;
 import lootextra;
 import statsmanager;
 import statmodifier;
@@ -15,8 +16,10 @@ std::unique_ptr<WorldElement> GoblinSpawner::doSpawn(Cell *cell) const {
     constexpr int DEF = 20;
 
     constexpr int LOOT = 5;
+    constexpr double DODGE = 0.5;
 
     std::unique_ptr<StatModifier> mods = std::make_unique<DefaultStatModifier>();
+    mods = std::make_unique<Dodge>(std::move(mods), DODGE);
 
     std::vector<std::unique_ptr<StatsManager>> stman;
     stman.emplace_back(std::make_unique<LootExtra>(

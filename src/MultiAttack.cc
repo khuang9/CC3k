@@ -2,8 +2,8 @@ export module multiattack;
 
 // import ability;
 import <memory>;
-import moddecorator;
 import modifiers;
+import permanentmod;
 import race;
 import statmodifier;
 
@@ -17,7 +17,7 @@ import statmodifier;
 //     virtual void attack(Entity *other, double attackBoost) override;
 // }
 
-export class MultiAttack: public ModDecorator {
+export class MultiAttack: public PermanentMod {
     int numAttacks;
     Race exception;
   public:

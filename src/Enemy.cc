@@ -4,6 +4,7 @@ import <memory>;
 import <random>;
 import <vector>;
 import character_and_item;
+import drop;
 import spatial;
 import statsmanager;
 import statmodifier;
@@ -15,10 +16,11 @@ import worldelementtype;
 export class Enemy: public Character {
     bool aggro;
     Location playerLoc;
-    std::default_random_engine rng{42};
+    std::vector<Drop> drops;
 
   public:
-    Enemy(char symbol, Cell *cell, int maxHP, int hp, int atk, int def, Race race, std::unique_ptr<StatModifier> mods, std::vector<std::unique_ptr<StatsManager>> stman);
+    Enemy(char symbol, Cell *cell, int maxHP, int hp, int atk, int def, Race race, std::unique_ptr<StatModifier> mods, std::vector<std::unique_ptr<StatsManager>> stman, std::vector<Drop> drops);
+    const Drop *getRandomDrop() const;
     virtual void doTakeTurn() override;
     virtual void die(Character *killedBy) override;
     virtual void doNotify(Subject &whoFrom) override;

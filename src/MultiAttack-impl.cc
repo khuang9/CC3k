@@ -3,7 +3,7 @@ module multiattack;
 import <utility>;
 
 MultiAttack::MultiAttack(std::unique_ptr<StatModifier> next, int numAttacks, Race exception)
-    : ModDecorator{std::move(next)}, numAttacks{numAttacks}, exception{exception} {}
+    : PermanentMod{std::move(next)}, numAttacks{numAttacks}, exception{exception} {}
 
 // MultiAttack::MultiAttack(Entity *e, int attackTimes, Race exception)
     // : Ability{e}, attackTimes{attackTimes}, exception{exception} {}
@@ -19,7 +19,7 @@ MultiAttack::MultiAttack(std::unique_ptr<StatModifier> next, int numAttacks, Rac
 // }
 
 Modifiers MultiAttack::getModifiers(Race enemyRace) const {
-    Modifiers m = next->getModifiers(enemyRace);
+    Modifiers m = (next) ? next->getModifiers(enemyRace) : Modifiers();
     if (enemyRace != exception && exception != Race::Any) {
         m.numAttacks *= numAttacks;
     }

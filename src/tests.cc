@@ -14,30 +14,50 @@ import shadespawner;
 import smallgoldspawner;
 import phspawner;
 import rhspawner;
+import baspawner;
+import bdspawner;
+import waspawner;
+import wdspawner;
 import character_and_item;
 import dwarfspawner;
 import elfspawner;
 import vampirespawner;
 import trollspawner;
 import goblinspawner;
+import orcspawner;
+import humanspawner;
+import halflingspawner;
+import merchantspawner;
+import randomizer;
 using namespace std;
 
 int main() {
+    Randomizer::setSeed(42);
     Floor f{"emptyfloor.txt"};
     std::cout << f;
 
-    std::unique_ptr<WorldElement> p = f.spawnElement(std::make_unique<GoblinSpawner>(), 6, 25);//new Player{Location{5, 5}, 100, 100, 100, 100, Race::Shade};
-    std::unique_ptr<WorldElement> p2 = f.spawnElement(std::make_unique<DwarfSpawner>(), 6, 28);
-    // std::unique_ptr<WorldElement> p3 = f.spawnElement(std::make_unique<SmallGoldSpawner>(), 5, 7);
-    // std::unique_ptr<WorldElement> p4 = f.spawnElement(std::make_unique<PHSpawner>(), 5, 8);
-    // std::unique_ptr<WorldElement> p5 = f.spawnElement(std::make_unique<RHSpawner>(), 5, 9);
+    Character *p = dynamic_cast<Character*>(f.spawnPlayer(std::make_unique<TrollSpawner>(), 6, 25));//new Player{Location{5, 5}, 100, 100, 100, 100, Race::Shade};
+    WorldElement *p2 = f.spawnElement(std::make_unique<OrcSpawner>(), 6, 28);
+    // WorldElement *p3 = f.spawnElement(std::make_unique<MerchantSpawner>(), 6, 20);
+    // WorldElement *p4 = f.spawnElement(std::make_unique<SmallGoldSpawner>(), 6, 27);
+    WorldElement *p5 = f.spawnElement(std::make_unique<BASpawner>(), 6, 23);
+    WorldElement *p6 = f.spawnElement(std::make_unique<WDSpawner>(), 6, 24);
     std::cout << f;
+    int i = 0;
     while (true) {
         p->takeTurn();
         p2->takeTurn();
+        // p3->takeTurn();
         std::cout << f;
-        std::cout << *(dynamic_cast<Character*>(p.get()));
-        std::cout << *(dynamic_cast<Character*>(p2.get()));
+        std::cout << *p;
+        std::cout << "Turn: " << i << std::endl;
+        if (i == 5) {
+            std::cout << "finna prune it" << std::endl;
+            p->loseTempEffects();
+        }
+        // std::cout << *(dynamic_cast<Character*>(p2));
+        // std::cout << *(dynamic_cast<Character*>(p3));
+        ++i;
     }
     // Player *p2 = new Player{Location{5, 5}, 200, 200, 200, 200, Race::Vampire};
     // std::cout << *p << std::endl;

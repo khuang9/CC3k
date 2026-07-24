@@ -12,6 +12,7 @@ std::ostream &operator<<(std::ostream &out, Race race) {
     if (race == Race::Orc) out << "Orc";
     if (race == Race::Dragon) out << "Dragon";
     if (race == Race::Merchant) out << "Merchant";
+    if (race == Race::Halfling) out << "Halfling";
 
     return out;
 }

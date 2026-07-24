@@ -9,5 +9,5 @@ Modifiers::Modifiers()
     , numAttacks{1}
     , stationary{false}
     , dodgeChance{0.0}
-    , dropsGold{false}
+    , dropsItems{false}
     , neutral{false} {}
