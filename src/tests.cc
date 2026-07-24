@@ -28,6 +28,7 @@ import orcspawner;
 import humanspawner;
 import halflingspawner;
 import merchantspawner;
+import drowspawner;
 import randomizer;
 using namespace std;
 
@@ -36,7 +37,7 @@ int main() {
     Floor f{"emptyfloor.txt"};
     std::cout << f;
 
-    Character *p = dynamic_cast<Character*>(f.spawnPlayer(std::make_unique<TrollSpawner>(), 6, 25));//new Player{Location{5, 5}, 100, 100, 100, 100, Race::Shade};
+    Character *p = dynamic_cast<Character*>(f.spawnPlayer(std::make_unique<DrowSpawner>(), 6, 25));//new Player{Location{5, 5}, 100, 100, 100, 100, Race::Shade};
     WorldElement *p2 = f.spawnElement(std::make_unique<OrcSpawner>(), 6, 28);
     // WorldElement *p3 = f.spawnElement(std::make_unique<MerchantSpawner>(), 6, 20);
     // WorldElement *p4 = f.spawnElement(std::make_unique<SmallGoldSpawner>(), 6, 27);

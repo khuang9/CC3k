@@ -29,9 +29,11 @@ PotionAtkEffect.cc PotionAtkEffect-impl.cc
 PotionDefEffect.cc PotionDefEffect-impl.cc
 MultiAttack.cc MultiAttack-impl.cc
 MagnifyAttack.cc MagnifyAttack-impl.cc
+MagnifyPotion.cc MagnifyPotion-impl.cc
 ExtraScore.cc ExtraScore-impl.cc
 Dodge.cc Dodge-impl.cc
 NonHostile.cc NonHostile-impl.cc
+StandGuard.cc StandGuard-impl.cc
 DropsItems.cc DropsItems-impl.cc
 CharacterAndItem.cc CharacterAndItem-impl.cc
 Player.cc Player-impl.cc
@@ -55,6 +57,7 @@ ShadeSpawner.cc ShadeSpawner-impl.cc
 VampireSpawner.cc VampireSpawner-impl.cc
 TrollSpawner.cc TrollSpawner-impl.cc
 GoblinSpawner.cc GoblinSpawner-impl.cc
+DrowSpawner.cc DrowSpawner-impl.cc
 OrcSpawner.cc OrcSpawner-impl.cc
 HumanSpawner.cc HumanSpawner-impl.cc
 HalflingSpawner.cc HalflingSpawner-impl.cc
